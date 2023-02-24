@@ -1,0 +1,33 @@
+[{
+  "quiz_name": "Section A",
+  "quiz_data": {
+    "Question 1": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 0
+    },
+    "Question 2": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 1
+    },
+    "Question 3": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 2
+    }
+  }
+}, {
+  "quiz_name": "Section B",
+  "quiz_data": {
+    "Question 1": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 0
+    },
+    "Question 2": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 1
+    },
+    "Question 3": {
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "answer": 2
+    }
+  }
+}]
