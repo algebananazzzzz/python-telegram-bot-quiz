@@ -1,6 +1,6 @@
 # Python Telegram Bot Quiz
 
-![Video demo](https://user-images.githubusercontent.com/48286805/235227846-71e991c6-b58a-44e9-813a-c206652d104a.mp4)
+[!Video demo](https://user-images.githubusercontent.com/48286805/235227846-71e991c6-b58a-44e9-813a-c206652d104a.mp4)
 
 Writeup:
 
