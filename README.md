@@ -1,7 +1,12 @@
 # Python Telegram Bot Quiz
+
+![Video demo](https://user-images.githubusercontent.com/48286805/235227846-71e991c6-b58a-44e9-813a-c206652d104a.mp4)
+
 Writeup:
 
-A scalable telegram quiz bot built using the python-telegram-bot (v20.1) framework. This project allows the creation of knowledge tests on multiple topics e.g. integration and logarithms in Mathematics, using telegram's native quiz feature for every question. This allows users to test themselves anywhere, anytime using a familiar interface with ease.
+A scalable telegram quiz bot built using the python-telegram-bot (v20.1) framework. This project allows the creation of knowledge tests on multiple topics e.g. integration and logarithms in Mathematics, using telegram's native quiz feature 
+
+for every question. This allows users to test themselves anywhere, anytime using a familiar interface with ease.
 
 
 # Deployment Requisites:
