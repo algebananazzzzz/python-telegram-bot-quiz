@@ -1,0 +1,9 @@
+application_name: BotName
+lambda:
+  botname:
+    function_name: BotName-%s-function
+    basedir: app/deploy
+    envfile_basedir: .polymer/lambda_config
+api_lambda_integration:
+  botname:
+    integration: true

@@ -1,0 +1,66 @@
+[
+  {
+    "quiz_name": "Quiz 1",
+    "quiz_data": {
+      "1. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      },
+      "2. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      },
+      "3. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      }
+    }
+  },
+  {
+    "quiz_name": "Quiz 2",
+    "quiz_data": {
+      "1. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      },
+      "2. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      },
+      "3. First Question": {
+        "options": [
+          "Option 1",
+          "Option 2",
+          "Option 3",
+          "Option 4"
+        ],
+        "answer": 0
+      }
+    }
+  }
+]
