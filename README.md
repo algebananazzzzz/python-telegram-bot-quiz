@@ -1,6 +1,6 @@
 # Python Telegram Bot Quiz
 
-[!Video demo](demo.mp4)
+[!Video demo](https://github.com/algebananazzzzz/python-telegram-bot-quiz/raw/master/demo.mp4)
 
 ## Table of Contents
 
