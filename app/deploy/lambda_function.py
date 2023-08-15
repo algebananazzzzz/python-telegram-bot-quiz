@@ -59,8 +59,8 @@ async def main(event, context):
     request = Update.de_json(json.loads(event["body"]), application.bot)
 
     try:
-        await application.initialize()
         await persistence.load_active_user(request.effective_user.id)
+        await application.initialize()
         await application.process_update(request)
         await application.update_persistence()
         await persistence.flush()

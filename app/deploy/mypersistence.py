@@ -10,7 +10,7 @@ from telegram.ext._utils.types import BD, CD, UD, CDCData, ConversationDict, Con
 class MyPersistence(BasePersistence[UD, CD, BD]):
     '''Using Redis to make the bot persistent'''
 
-    def __init__(self, redis_conn, redis_key: str, active_users: list = list(), active_chats: list = list(), store_data: Optional[PersistenceInput] = None, update_interval: float = 60):
+    def __init__(self, redis_conn, redis_key: str,  store_data: Optional[PersistenceInput] = PersistenceInput(bot_data=False, chat_data=False, callback_data=False), update_interval: float = 60):
         super().__init__(store_data=store_data, update_interval=update_interval)
         self.redis_conn = redis_conn
         self.redis_key: str = redis_key
@@ -20,8 +20,8 @@ class MyPersistence(BasePersistence[UD, CD, BD]):
         self.callback_data: Optional[CDCData] = None
         self.conversations: Optional[Dict[str,
                                           Dict[Tuple[Union[int, str], ...], object]]] = None
-        self.active_users = active_users
-        self.active_chats = active_chats
+        self.active_users = set()
+        self.active_chats = set()
 
     def load_bot_data(self):
         """
@@ -137,36 +137,41 @@ class MyPersistence(BasePersistence[UD, CD, BD]):
             self.callback_data = None
 
     def dump_redis(self):
-        data = {
-            "bot_data": json.dumps(self.bot_data)
-        }
+        data = dict()
 
-        for key, value in self.user_data.items():
-            data[f"user:{key}"] = json.dumps(value)
+        if self.bot_data:
+            data["bot_data"] = json.dumps(self.bot_data)
 
-        chat_data = {}
+        if self.user_data:
+            for key, value in self.user_data.items():
+                data[f"user:{key}"] = json.dumps(value)
 
-        for key, value in self.chat_data.items():
-            transformed_dict = {
-                f"chat:{key}": {
-                    'chat_data': value,
-                    'conversations': {}
-                }
-            }
-            chat_data.update(transformed_dict)
+        if self.chat_data or self.conversations:
+            chat_data = {}
 
-        for conv_name, conv_dict in self.conversations.items():
-            for chat_id, conv_val in conv_dict.items():
-                chat_key = f"chat:{chat_id[0]}"
-                if chat_key in chat_data:
-                    chat_data[chat_key]['conversations'][conv_name] = {
-                        conv_val: chat_id}
-                else:
-                    chat_data[chat_key] = {'conversations': {
-                        conv_name: {conv_val: chat_id}}}
+            if self.chat_data:
+                for key, value in self.chat_data.items():
+                    transformed_dict = {
+                        f"chat:{key}": {
+                            'chat_data': value,
+                            'conversations': {}
+                        }
+                    }
+                    chat_data.update(transformed_dict)
 
-        for chat_id, chat_data in chat_data.items():
-            data[chat_id] = json.dumps(chat_data)
+            if self.conversations:
+                for conv_name, conv_dict in self.conversations.items():
+                    for chat_id, conv_val in conv_dict.items():
+                        chat_key = f"chat:{chat_id[0]}"
+                        if chat_key in chat_data:
+                            chat_data[chat_key]['conversations'][conv_name] = {
+                                conv_val: chat_id}
+                        else:
+                            chat_data[chat_key] = {'conversations': {
+                                conv_name: {conv_val: chat_id}}}
+
+            for chat_id, chat_data in chat_data.items():
+                data[chat_id] = json.dumps(chat_data)
 
         try:
             self.redis_conn.hmset(self.redis_key, data)
@@ -176,12 +181,12 @@ class MyPersistence(BasePersistence[UD, CD, BD]):
             self.redis_conn.hmset(self.redis_key, data)
 
     async def load_active_user(self, user_id):
-        self.active_users.append(user_id)
+        self.active_users.add(user_id)
         self.load_user_data()
         return True
 
     async def load_active_chat(self, chat_id):
-        self.active_chats.append(chat_id)
+        self.active_chats.add(chat_id)
         self.load_chat_and_conv_data()
         return True
 
