@@ -1,0 +1,86 @@
+name: "Terraform"
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - test
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_ORGANIZATION }}
+      TF_VAR_application_stage: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+      TF_VAR_aws_region: ${{vars.AWS_REGION}}
+      TF_VAR_application_name: ${{ vars.APPLICATION_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          # terraform_version: 1.4.4
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Load AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Configure AWS credentials file
+        run: |
+          mkdir .aws
+          echo [default] >> .aws/credentials
+          echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >> .aws/credentials
+          echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >> .aws/credentials
+          echo AWS_REGION=$AWS_REGION >> .aws/credentials
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        continue-on-error: true
+        run: |
+          export TF_WORKSPACE=${TF_VAR_application_name}-${TF_VAR_application_stage}
+          terraform init -input=false
+          
+      - name: Create Workspace and Init
+        if: steps.init.outcome == 'failure'
+        run: |
+          export TF_WORKSPACE=${TF_VAR_application_name}-${TF_VAR_application_stage}
+          export WORKSPACE_ID=$(curl \
+          --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
+          --header "Content-Type: application/vnd.api+json" \
+          --request POST \
+          --data '{"data": {"type": "workspaces", "attributes": {"name": "'${TF_WORKSPACE}'"}}}' \
+          https://app.terraform.io/api/v2/organizations/${TF_CLOUD_ORGANIZATION}/workspaces | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+          echo $WORKSPACE_ID
+          curl \
+          --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
+          --header "Content-Type: application/vnd.api+json" \
+          --request POST \
+          --data '{"data": [{"type": "tags","attributes": {"name": "github-actions"}}]}' \
+          https://app.terraform.io/api/v2/workspaces/${WORKSPACE_ID}/relationships/tags
+          terraform init -input=false
+
+      - name: TerraformValidate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        id: apply
+        run: |
+          export TF_WORKSPACE=${TF_VAR_application_name}-${TF_VAR_application_stage}
+          terraform apply -auto-approve -input=false

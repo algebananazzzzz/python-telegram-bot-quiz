@@ -43,7 +43,7 @@ resource "aws_lambda_function" "lambda" {
 resource "aws_lambda_alias" "lambda" {
   name             = var.lambda_alias_name
   function_name    = var.lambda_function_name
-  function_version = "1"
+  function_version = "42"
 
   # To use CodeDeploy, ignore change of function_version
   lifecycle {

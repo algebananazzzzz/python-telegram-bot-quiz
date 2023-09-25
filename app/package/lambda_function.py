@@ -1,8 +1,6 @@
 import os
 import json
-import redis
 import asyncio
-from mypersistence import MyPersistence
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -22,20 +20,9 @@ from handlers import (
 
 passphrase = os.environ.get('PASSPHRASE')
 
-redis_endpoint = os.environ["REDIS_HOST"]
-redis_port = os.environ["REDIS_PORT"]
-redis_key = os.environ["REDIS_KEY"]
-
-try:
-    redis_conn = redis.StrictRedis(host=redis_endpoint, port=redis_port)
-except Exception:
-    redis_conn = None
-
-persistence = MyPersistence(redis_conn=redis_conn,
-                            redis_key=os.environ.get("REDIS_KEY"))
 
 application = Application.builder().token(
-    os.environ.get('TOKEN')).persistence(persistence).build()
+    os.environ.get('TOKEN')).build()
 
 application.add_handler(CommandHandler("start", start))
 
@@ -59,11 +46,8 @@ async def main(event, context):
     request = Update.de_json(json.loads(event["body"]), application.bot)
 
     try:
-        await persistence.load_active_user(request.effective_user.id)
         await application.initialize()
         await application.process_update(request)
-        await application.update_persistence()
-        await persistence.flush()
 
         return {
             'statusCode': 200,
@@ -71,6 +55,7 @@ async def main(event, context):
         }
 
     except Exception as e:
+        raise e
         return {
             'statusCode': 500,
             'body': 'Failure'

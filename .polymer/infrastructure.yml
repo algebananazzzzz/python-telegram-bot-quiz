@@ -1,9 +1,9 @@
-application_name: BotName
+application_name: MyQuizBot
 lambda:
-  botname:
-    function_name: BotName-%s-function
-    basedir: app/deploy
+  quizbot:
+    function_name: MyQuizBot-%s-function
+    basedir: app/package
     envfile_basedir: .polymer/lambda_config
 api_lambda_integration:
-  botname:
+  quizbot:
     integration: true

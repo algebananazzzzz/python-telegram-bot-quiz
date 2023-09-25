@@ -1,6 +1,6 @@
 import json
 
-with open('data.json') as f:
+with open('package/data.json') as f:
     data = json.load(f)
 
 for quiz in data:

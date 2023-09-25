@@ -1,4 +1,3 @@
-import redis
 import os
 from telegram import Update
 from telegram.ext import (
@@ -19,18 +18,9 @@ from handlers import (
 
 passphrase = os.environ.get('PASSPHRASE')
 
-redis_endpoint = os.environ["REDIS_HOST"]
-redis_port = os.environ["REDIS_PORT"]
-redis_key = os.environ["REDIS_KEY"]
-bot_token = os.environ["TOKEN"]
-
-try:
-    redis_conn = redis.StrictRedis(host=redis_endpoint, port=redis_port)
-except Exception:
-    redis_conn = None
 
 application = Application.builder().token(
-    bot_token).build()
+    os.environ.get('TOKEN')).build()
 
 application.add_handler(CommandHandler("start", start))
 
