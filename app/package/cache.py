@@ -11,11 +11,6 @@ try:
 except Exception:
     redis_conn = None
 
-try:
-    redis_conn = redis.StrictRedis(host=redis_endpoint, port=redis_port)
-except Exception:
-    redis_conn = None
-
 
 def dump_data(userId, data):
     try:
